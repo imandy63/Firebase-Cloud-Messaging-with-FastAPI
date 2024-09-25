@@ -4,6 +4,7 @@ import { Input } from "@/app/components/Input";
 import TextArea from "@/app/components/TextArea";
 import { MessageSendModel } from "@/model/message";
 import Cookies from "@/utils/cookie";
+import Link from "next/link";
 import { useState } from "react";
 
 const SendMessagePage = () => {
@@ -26,9 +27,21 @@ const SendMessagePage = () => {
   };
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Send Email</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 p-4">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-700">Send Message</h2>
+          <div>
+            <Link href={"/message"}>
+              <button
+                type="button"
+                className="ml-2 py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 transition duration-200"
+              >
+                Back
+              </button>
+            </Link>
+          </div>
+        </div>
         <div className="space-y-4">
           <div>
             <Input

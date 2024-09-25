@@ -61,7 +61,6 @@ const MessagePage = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      // navigator.serviceWorker.register("./firebase-messaging-sw.js");
       if (notificationPermissionStatus === "granted") {
         const messaging = getMessaging(firebaseApp);
 
@@ -108,58 +107,53 @@ const MessagePage = () => {
   }, [update]);
 
   return (
-    <div className="w-4/5 m-auto">
-      <div className="flex justify-between">
-        <div>Message</div>
-        <Link
-          href={"/"}
-          className="cursor-pointer py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-          onClick={outClicked}
-        >
-          Out
-        </Link>
-        <Link href={"/message/send"}>
-          <button
-            type="button"
-            className="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-          >
-            Send
-          </button>
-        </Link>
-      </div>
-      <div>
-        <div className="w-full overflow-hidden rounded-lg shadow-xs">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full whitespace-no-wrap">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 p-4">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-3xl">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-700">Messages</h2>
+          <div>
+            <Link
+              href={"/"}
+              className="py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 transition duration-200"
+              onClick={outClicked}
+            >
+              Logout
+            </Link>
+            <Link href={"/message/send"}>
+              <button
+                type="button"
+                className="ml-2 py-2 px-4 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 transition duration-200"
+              >
+                Send
+              </button>
+            </Link>
+          </div>
+        </div>
+        <div className="overflow-hidden rounded-lg shadow-xs">
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white divide-y divide-gray-200">
               <thead>
-                <tr className="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                <tr className="text-xs font-semibold text-gray-500 uppercase bg-gray-50">
                   <th className="px-4 py-3">User</th>
                   <th className="px-4 py-3">Subject</th>
                   <th className="px-4 py-3">Date</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                {messages.map((message, index) => {
-                  return (
-                    <tr
-                      key={index}
-                      className={`text-gray-700 dark:text-gray-400 ${
-                        message.status == "sent" ? "font-bold" : ""
-                      }`}
-                    >
-                      <Link href={`/message/${message.id}`}>
-                        <td className="px-4 py-3">{message.senderId}</td>
-                      </Link>
-                      <td className="px-4 py-3 text-sm">{message.subject}</td>
-                      <td className="px-4 py-3 text-sm">{message.sendTime}</td>
-                    </tr>
-                  );
-                })}
+              <tbody className="divide-y divide-gray-200">
+                {messages.map((message, index) => (
+                  <tr key={index} className={`text-gray-700 ${message.status === "sent" ? "font-bold" : ""}`}>
+                    <Link href={`/message/${message.id}`}>
+                      <td className="px-4 py-3 hover:bg-gray-100 cursor-pointer">{message.senderId}</td>
+                    </Link>
+                    <td className="px-4 py-3 text-sm">{message.subject}</td>
+                    <td className="px-4 py-3 text-sm">{message.sendTime}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <div className="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-            <span className="col-span-2"></span>
+          <div className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase bg-gray-50 border-t border-gray-200">
+            {/* You can add footer content here if needed */}
           </div>
         </div>
       </div>
