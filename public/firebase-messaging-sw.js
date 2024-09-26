@@ -54,6 +54,8 @@ self.addEventListener("push", (e) => {
     waitUntil: e.waitUntil.bind(e),
   });
 
+  e.waitUntil(self.registration.showNotification());
+
   // Stop event propagation
   e.stopImmediatePropagation();
 
@@ -73,12 +75,24 @@ messaging.onBackgroundMessage((payload) => {
     data: restPayload,
   };
   console.log(payload);
-  return self.registration.showNotification(title, notificationOptions);
+
+  self.registration.showNotification(title, notificationOptions);
+
+  const channel = new BroadcastChannel("sw-messages");
+  channel.postMessage(payload.data);
 });
 
 self.addEventListener("notificationclick", (event) => {
-  if (event?.notification?.data && event?.notification?.data?.link) {
-    self.clients.openWindow(event.notification.data.link);
+  // console.log(event?.notification?.data?.type == "New Message");
+  // console.log(event?.notification?.data?.id);
+  if (
+    event?.notification?.data &&
+    event?.notification?.data?.id &&
+    event?.notification?.data?.type === "New Message"
+  ) {
+    self.clients.openWindow(
+      `http://localhost:3000/message/${event?.notification?.data?.id}`
+    );
   }
 
   // close notification after click

@@ -29,6 +29,34 @@ const MessagePage = () => {
     forceUpdate();
   }
 
+  const handleMessageReceived = (payload) => {
+    console.log("Foreground push notification received:", payload);
+    const data = payload.data as MessageReceiveModel;
+    console.log(data.type !== "New Message");
+    if (data?.type === "New Message") {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: data.id,
+          message: data.message,
+          sendTime: data.sendTime,
+          attachedUrl: data.attachedUrl,
+          status: data.status,
+          readAt: data.readAt,
+          receiverId: data.receiverId,
+          senderId: data.senderId,
+          subject: data.subject,
+        },
+      ]);
+    } else {
+      const update = data as MessageUpdateStatusModel;
+      console.log(update);
+      if (update != null) {
+        setUpdate(update);
+      }
+    }
+  };
+
   const outClicked = async () => {
     Cookies.clearUser();
     await removeToken(userId as string, token);
@@ -59,42 +87,13 @@ const MessagePage = () => {
             headers
           );
           navigator.sendBeacon("http://localhost:8000/user/removetoken", blob);
-          // await removeToken(
-          //   userId as string,
-          //   Cookies.getCookieCall("token") as string
-          // );
         });
         if (typeof window !== "undefined" && "serviceWorker" in navigator) {
           if (data.notificationPermissionStatus === "granted") {
             const messaging = getMessaging(firebaseApp);
-
-            onMessage(messaging, (payload) => {
-              console.log("Foreground push notification received:", payload);
-              const data = payload.data as MessageReceiveModel;
-              console.log(data.type !== "New Message");
-              if (data?.type === "New Message") {
-                setMessages((prev) => [
-                  ...prev,
-                  {
-                    id: data.id,
-                    message: data.message,
-                    sendTime: data.sendTime,
-                    attachedUrl: data.attachedUrl,
-                    status: data.status,
-                    readAt: data.readAt,
-                    receiverId: data.receiverId,
-                    senderId: data.senderId,
-                    subject: data.subject,
-                  },
-                ]);
-              } else {
-                const update = data as MessageUpdateStatusModel;
-                console.log(update);
-                if (update != null) {
-                  setUpdate(update);
-                }
-              }
-            });
+            const channel = new BroadcastChannel("sw-messages");
+            channel.addEventListener("message", handleMessageReceived);
+            onMessage(messaging, handleMessageReceived);
           }
         }
         addToken({

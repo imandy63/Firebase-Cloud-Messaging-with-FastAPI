@@ -8,7 +8,7 @@ class Cookies {
   static setCookieCall = (key: string, value: string) => {
     const d1 = new Date();
     const d2 = new Date(d1);
-    d2.setMinutes(d1.getMinutes() + 30);
+    d2.setDate(d1.getDate() + 1);
 
     return setCookie(key, value, {
       expires: new Date(d2),
