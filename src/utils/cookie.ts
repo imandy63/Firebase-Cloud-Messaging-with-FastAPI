@@ -18,6 +18,10 @@ class Cookies {
   static clearUser = () => {
     deleteCookie("userId");
   };
+
+  static clearToken = () => {
+    deleteCookie("token");
+  };
 }
 
 export default Cookies;

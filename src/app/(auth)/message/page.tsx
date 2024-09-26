@@ -41,9 +41,62 @@ const MessagePage = () => {
       getFcmToken().then((data) => {
         setNotificationPermissionStatus(data.notificationPermissionStatus);
         setToken(data.token);
-        window.addEventListener("pagehide", async () => {
-          await removeToken(userId as string, data.token as string);
+        Cookies.setCookieCall("token", data.token);
+        window.addEventListener("beforeunload", async () => {
+          Cookies.clearUser();
+          const headers = {
+            type: "application/json",
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          };
+          const blob = new Blob(
+            [
+              JSON.stringify({
+                username: userId as string,
+                token: Cookies.getCookieCall("token") as string,
+              }),
+            ],
+            headers
+          );
+          navigator.sendBeacon("http://localhost:8000/user/removetoken", blob);
+          // await removeToken(
+          //   userId as string,
+          //   Cookies.getCookieCall("token") as string
+          // );
         });
+        if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+          if (data.notificationPermissionStatus === "granted") {
+            const messaging = getMessaging(firebaseApp);
+
+            onMessage(messaging, (payload) => {
+              console.log("Foreground push notification received:", payload);
+              const data = payload.data as MessageReceiveModel;
+              console.log(data.type !== "New Message");
+              if (data?.type === "New Message") {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    id: data.id,
+                    message: data.message,
+                    sendTime: data.sendTime,
+                    attachedUrl: data.attachedUrl,
+                    status: data.status,
+                    readAt: data.readAt,
+                    receiverId: data.receiverId,
+                    senderId: data.senderId,
+                    subject: data.subject,
+                  },
+                ]);
+              } else {
+                const update = data as MessageUpdateStatusModel;
+                console.log(update);
+                if (update != null) {
+                  setUpdate(update);
+                }
+              }
+            });
+          }
+        }
         addToken({
           username: userId as string,
           registrationToken: data.token,
@@ -60,43 +113,9 @@ const MessagePage = () => {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      if (notificationPermissionStatus === "granted") {
-        const messaging = getMessaging(firebaseApp);
-
-        const unsubscribe = onMessage(messaging, (payload) => {
-          console.log("Foreground push notification received:", payload);
-          const data = payload.data as MessageReceiveModel;
-          if (data?.type === "New Message") {
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: data.id,
-                message: data.message,
-                sendTime: data.sendTime,
-                attachedUrl: data.attachedUrl,
-                status: data.status,
-                readAt: data.readAt,
-                receiverId: data.receiverId,
-                senderId: data.senderId,
-                subject: data.subject,
-              },
-            ]);
-          } else {
-            setUpdate(data as MessageUpdateStatusModel);
-          }
-        });
-        return () => {
-          unsubscribe();
-        };
-      }
-    }
-  }, [token]);
-
-  useEffect(() => {
-    console.log({ messages, update });
     if (update != null) {
       const message = messages.find((mess) => mess.id === update.id);
+      console.log(message);
       if (message) {
         message.readAt = update.readAt;
         message.status = "read";
@@ -141,9 +160,16 @@ const MessagePage = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {messages.map((message, index) => (
-                  <tr key={index} className={`text-gray-700 ${message.status === "sent" ? "font-bold" : ""}`}>
+                  <tr
+                    key={index}
+                    className={`text-gray-700 ${
+                      message.status === "sent" ? "font-bold" : ""
+                    }`}
+                  >
                     <Link href={`/message/${message.id}`}>
-                      <td className="px-4 py-3 hover:bg-gray-100 cursor-pointer">{message.senderId}</td>
+                      <td className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
+                        {message.senderId}
+                      </td>
                     </Link>
                     <td className="px-4 py-3 text-sm">{message.subject}</td>
                     <td className="px-4 py-3 text-sm">{message.sendTime}</td>
