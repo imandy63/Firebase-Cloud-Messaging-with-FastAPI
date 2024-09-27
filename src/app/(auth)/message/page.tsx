@@ -88,12 +88,17 @@ const MessagePage = () => {
           );
           navigator.sendBeacon("http://localhost:8000/user/removetoken", blob);
         });
+        console.log(data.notificationPermissionStatus);
         if (typeof window !== "undefined" && "serviceWorker" in navigator) {
           if (data.notificationPermissionStatus === "granted") {
-            const messaging = getMessaging(firebaseApp);
-            const channel = new BroadcastChannel("sw-messages");
-            channel.addEventListener("message", handleMessageReceived);
-            onMessage(messaging, handleMessageReceived);
+            navigator.serviceWorker
+              .register("/firebase-messaging-sw.js")
+              .then(() => {
+                const messaging = getMessaging(firebaseApp);
+                const channel = new BroadcastChannel("sw-messages");
+                channel.addEventListener("message", handleMessageReceived);
+                onMessage(messaging, handleMessageReceived);
+              });
           }
         }
         addToken({

@@ -67,24 +67,24 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   // console.log('[firebase-messaging-sw.js] Received background message ', payload);
-  
-  const { subject, body, data, image, icon, ...restPayload, type } = payload.data;
+
+  const { subject, body, data, image, icon, type, ...restPayload } =
+    payload.data;
   const channel = new BroadcastChannel("sw-messages");
   channel.postMessage(payload.data);
-  if(type === "New Message"){
+  if (type === "New Message") {
     const notificationOptions = {
       title: subject,
-      data:data,
+      data: data,
       icon: image || "/icons/firebase-logo.png", // path to your "fallback" firebase notification logo
       data: restPayload,
     };
     console.log(payload);
-    
+
     self.registration.showNotification(title, notificationOptions);
   }
 
-  console.log("Broadcast sent")
-
+  console.log("Broadcast sent");
 });
 
 self.addEventListener("notificationclick", (event) => {
