@@ -7,11 +7,17 @@ importScripts(
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBGw97YupPweRNwK_YL3v0bniwbYfaJd64",
-  projectId: "notification-service-44a22",
-  messagingSenderId: "594703263162",
-  authDomain: "notification-service-44a22.firebaseapp.com",
-  appId: "1:594703263162:web:1de7a7dd515aaec8aa2983",
+  apiKey: "AIzaSyDCuXg-CB_XrnHDIZunt497Fru5iCgk3EM",
+  projectId: "notification-service-43ed1",
+  authDomain: "notification-service-43ed1.firebaseapp.com",
+  messagingSenderId: "1037168455037",
+  appId: "1:1037168455037:web:1ae856b261748aaf483014",
+
+  // apiKey: "AIzaSyBGw97YupPweRNwK_YL3v0bniwbYfaJd64",
+  // projectId: "notification-service-44a22",
+  // messagingSenderId: "594703263162",
+  // authDomain: "notification-service-44a22.firebaseapp.com",
+  // appId: "1:594703263162:web:1de7a7dd515aaec8aa2983",
 };
 
 firebase.initializeApp(firebaseConfig);

@@ -11,7 +11,8 @@ const getFcmToken = async () => {
       if (permission === "granted" && "serviceWorker" in navigator) {
         const currentToken = await getToken(messaging, {
           vapidKey:
-            "BDI69M_uq2cO9nAfKU03Tp5ezuE57-Aj1y3i3X5YGKgkyzd3q7ZI9fdygxoN7KMxp-xYW9f-NIo9ASGv1RzA9Sg",
+            // "BDI69M_uq2cO9nAfKU03Tp5ezuE57-Aj1y3i3X5YGKgkyzd3q7ZI9fdygxoN7KMxp-xYW9f-NIo9ASGv1RzA9Sg",
+            "BOReUukNHBHSXYubsj3vv3AHRn-gqVVJ625f7XWTLFA01BQWGpDzX6q7pXmAJFXMkc4maSRgjGpc3itIiwblLps",
         });
         if (currentToken) {
           return {

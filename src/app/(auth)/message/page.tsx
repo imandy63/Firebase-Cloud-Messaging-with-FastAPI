@@ -13,9 +13,11 @@ import { getMessaging, onMessage } from "firebase/messaging";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useReducer, useState } from "react";
+import useWebSocket from "react-use-websocket";
 
 const MessagePage = () => {
   const [messages, setMessages] = useState<MessageModel[]>([]);
+  const [socketUrl, setSocketUrl] = useState("");
   const router = useRouter();
   const [update, setUpdate] = useState<MessageUpdateStatusModel | null>();
   const userId = Cookies.getCookieCall("userId");
@@ -25,7 +27,7 @@ const MessagePage = () => {
 
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  function handleClick() {
+  function handleRerender() {
     forceUpdate();
   }
 
@@ -60,34 +62,49 @@ const MessagePage = () => {
   const outClicked = async () => {
     Cookies.clearUser();
     await removeToken(userId as string, token);
-    await deleteRegistrationToken();
+    // await deleteRegistrationToken();
     router.push("/");
   };
+
+  const { sendMessage, lastMessage } = useWebSocket(socketUrl);
+
+  useEffect(() => {
+    if (lastMessage != null) {
+      if (lastMessage.data == "PING") {
+        sendMessage("PONG");
+      }
+      console.log(lastMessage);
+    }
+  }, [lastMessage]);
 
   useEffect(() => {
     if (!token) {
       getFcmToken().then((data) => {
         setNotificationPermissionStatus(data.notificationPermissionStatus);
         setToken(data.token);
+        setSocketUrl(
+          `ws://localhost:8000/ws?username=${userId}&token=${data.token}`
+        );
+        console.log(data.token);
         Cookies.setCookieCall("token", data.token);
-        window.addEventListener("beforeunload", async () => {
-          Cookies.clearUser();
-          const headers = {
-            type: "application/json",
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          };
-          const blob = new Blob(
-            [
-              JSON.stringify({
-                username: userId as string,
-                token: Cookies.getCookieCall("token") as string,
-              }),
-            ],
-            headers
-          );
-          navigator.sendBeacon("http://localhost:8000/user/removetoken", blob);
-        });
+        // window.addEventListener("beforeunload", async () => {
+        //   // Cookies.clearUser();
+        //   const headers = {
+        //     type: "application/json",
+        //     Accept: "application/json",
+        //     "Content-Type": "application/json",
+        //   };
+        //   const blob = new Blob(
+        //     [
+        //       JSON.stringify({
+        //         username: userId as string,
+        //         token: Cookies.getCookieCall("token") as string,
+        //       }),
+        //     ],
+        //     headers
+        //   );
+        //   navigator.sendBeacon("http://localhost:8000/user/removetoken", blob);
+        // });
         console.log(data.notificationPermissionStatus);
         if (typeof window !== "undefined" && "serviceWorker" in navigator) {
           if (data.notificationPermissionStatus === "granted") {
@@ -124,7 +141,7 @@ const MessagePage = () => {
         message.readAt = update.readAt;
         message.status = "read";
         console.log({ message, messages });
-        handleClick();
+        handleRerender();
       }
     }
   }, [update]);

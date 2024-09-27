@@ -13,6 +13,7 @@ export const LoginComponent = () => {
   const router = useRouter();
 
   useEffect(() => {
+    console.log("Test");
     if (userId) {
       router.push("/message");
     }
@@ -32,7 +33,9 @@ export const LoginComponent = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 p-4">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-700 mb-6">Welcome Notfication Service!</h1>
+        <h1 className="text-3xl font-bold text-center text-gray-700 mb-6">
+          Welcome Notfication Service!
+        </h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <Input
           name="username"
