@@ -1,7 +1,7 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyBGw97YupPweRNwK_YL3v0bniwbYfaJd64",
-  projectId: "notification-service-44a22",
-  messagingSenderId: "594703263162",
-  authDomain: "notification-service-44a22.firebaseapp.com",
-  appId: "1:594703263162:web:1de7a7dd515aaec8aa2983",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };

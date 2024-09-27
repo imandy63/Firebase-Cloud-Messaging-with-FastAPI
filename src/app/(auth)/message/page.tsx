@@ -35,7 +35,6 @@ const MessagePage = () => {
     console.log(data.type !== "New Message");
     if (data?.type === "New Message") {
       setMessages((prev) => [
-        ...prev,
         {
           id: data.id,
           message: data.message,
@@ -47,6 +46,7 @@ const MessagePage = () => {
           senderId: data.senderId,
           subject: data.subject,
         },
+        ...prev,
       ]);
     } else {
       const update = data as MessageUpdateStatusModel;
