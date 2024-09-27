@@ -54,7 +54,7 @@ self.addEventListener("push", (e) => {
     waitUntil: e.waitUntil.bind(e),
   });
 
-  e.waitUntil(self.registration.showNotification());
+  // e.waitUntil(self.registration.showNotification(oldData.title));
 
   // Stop event propagation
   e.stopImmediatePropagation();
@@ -72,22 +72,28 @@ messaging.onBackgroundMessage((payload) => {
     payload.data;
   const channel = new BroadcastChannel("sw-messages");
   channel.postMessage(payload.data);
+
+  console.log(type);
+
   if (type === "New Message") {
+    console.log("New message");
     const notificationOptions = {
       title: subject,
-      data: data,
+      data: payload.data,
       icon: image || "/icons/firebase-logo.png", // path to your "fallback" firebase notification logo
-      data: restPayload,
     };
-    console.log(payload);
+    console.log(notificationOptions);
 
-    self.registration.showNotification(title, notificationOptions);
+    self.registration.showNotification(subject, {
+      data: payload.data,
+    });
   }
 
   console.log("Broadcast sent");
 });
 
 self.addEventListener("notificationclick", (event) => {
+  console.log(event.notification);
   if (
     event?.notification?.data &&
     event?.notification?.data?.id &&
