@@ -66,25 +66,25 @@ const MessagePage = () => {
     router.push("/");
   };
 
-  const { sendMessage, lastMessage } = useWebSocket(socketUrl);
+  // const { sendMessage, lastMessage } = useWebSocket(socketUrl);
 
-  useEffect(() => {
-    if (lastMessage != null) {
-      if (lastMessage.data == "PING") {
-        sendMessage("PONG");
-      }
-      console.log(lastMessage);
-    }
-  }, [lastMessage]);
+  // useEffect(() => {
+  //   if (lastMessage != null) {
+  //     if (lastMessage.data == "PING") {
+  //       sendMessage("PONG");
+  //     }
+  //     console.log(lastMessage);
+  //   }
+  // }, [lastMessage]);
 
   useEffect(() => {
     if (!token) {
       getFcmToken().then((data) => {
         setNotificationPermissionStatus(data.notificationPermissionStatus);
         setToken(data.token);
-        setSocketUrl(
-          `ws://localhost:8000/ws?username=${userId}&token=${data.token}`
-        );
+        // setSocketUrl(
+        //   `ws://localhost:8000/ws?username=${userId}&token=${data.token}`
+        // );
         console.log(data.token);
         Cookies.setCookieCall("token", data.token);
         // window.addEventListener("beforeunload", async () => {

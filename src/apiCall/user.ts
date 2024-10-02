@@ -29,7 +29,7 @@ export const removeToken = async (username: string, token: string) => {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    method: "POST",
+    method: "DELETE",
     body: JSON.stringify({
       username,
       token,
